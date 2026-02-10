@@ -23,6 +23,8 @@ body {
   overflow: hidden;
   height: 100vh;
   width: 100vw;
+  /* Support des unités viewport mobile */
+  height: 100dvh; /* Dynamic viewport height - ignore les barres d'URL */
 }
 
 /* UI FIXE */
@@ -492,15 +494,18 @@ body.is-loaded .cover-section .meta-data {
     padding: 0 5vw;
     align-items: flex-start;
     padding-top: 15vh;
+    padding-bottom: 10vh; /* Espace en bas pour éviter la coupure */
+    /* Support safe-area pour devices avec notch */
+    padding-bottom: max(10vh, env(safe-area-inset-bottom, 10vh));
   }
   
   /* SECTIONS - Largeur adaptée mobile */
   .gallery-item {
     width: 90vw;
     height: auto;
-    min-height: 85vh;
+    min-height: 100vh;
     margin-right: 10vw;
-    padding: 2rem 0;
+    padding: 2rem 0 4rem 0; /* Plus de padding en bas */
   }
   
   /* COVER SECTION - Mobile optimisé */
@@ -537,7 +542,7 @@ body.is-loaded .cover-section .meta-data {
     flex-direction: column;
     justify-content: flex-start;
     gap: 1.5rem;
-    padding: 2rem 0;
+    padding: 3rem 0 5rem 0; /* Plus de padding en bas */
   }
   
   .track-info {
@@ -609,6 +614,7 @@ body.is-loaded .cover-section .meta-data {
   
   .inverted .track-details {
     order: 2;
+    padding-bottom: 2rem; /* Espace supplémentaire */
   }
   
   .content-wrapper {
@@ -629,7 +635,7 @@ body.is-loaded .cover-section .meta-data {
   .play-track-btn {
     font-size: 0.75rem;
     padding: 0.75rem 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 3rem; /* Plus d'espace en bas */
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
@@ -761,7 +767,8 @@ body.is-loaded .cover-section .meta-data {
 }
   .gallery-item {
     width: 92vw;
-    min-height: 90vh;
+    min-height: 100vh;
+    padding-bottom: 5rem; /* Extra padding pour éviter la coupure */
   }
   
   .image-wrapper {
