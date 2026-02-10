@@ -414,6 +414,13 @@ body.is-loaded .cover-section .meta-data {
     left: 1rem;
     right: 1rem;
   }
+
+  .counter-wrap {
+    justify-content: center;
+  }
+  .counter-wrap #loader-count {
+    font-size: 30vw;
+  }
   
   .logo, .sound-btn {
     font-size: 0.65rem;
@@ -458,7 +465,6 @@ body.is-loaded .cover-section .meta-data {
     padding-bottom: 1.2rem;
     margin-bottom: 0.8rem;
     -webkit-tap-highlight-color: transparent;
-    /* Désactiver l'effet hover sur mobile */
     opacity: 1 !important;
   }
   
@@ -727,10 +733,32 @@ body.is-loaded .cover-section .meta-data {
     font-size: 14vw;
   }
   
-  .main-title {
-    font-size: 20vw;
+.main-title {
+  font-size: 16vw;
+  text-align: left;
+  display: inline-block; 
+}
+
+.main-title::after {
+  content: " →";
+  font-size: 0.8em;
+  margin-left: 10px;
+    display: inline-block; 
+  animation: fleche 2s infinite ease-in-out;
+}
+
+@keyframes fleche {
+  0% {
+    transform: translateX(0);
   }
-  
+  50% {
+    /* On utilise des pixels ou 'em' pour un mouvement contrôlé */
+    transform: translateX(30px); 
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
   .gallery-item {
     width: 92vw;
     min-height: 90vh;
