@@ -4,9 +4,9 @@ import './style.css'
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 const CONFIG = {
-  sensitivity: isMobile ? 1.5 : 2, 
-  lerp: isMobile ? 0.16 : 0.05, // Augmenté de 0.08 à 0.12 pour plus de réactivité
-  skewSensitivity: isMobile ? 0 : 0.005 // Désactivé sur mobile pour performances
+  sensitivity: 2, 
+  lerp: 0.05, 
+  skewSensitivity: 0.005 
 }
 
 // État
@@ -17,11 +17,6 @@ let state = {
 }
 
 let isScrollActive = false;
-let touchStart = 0;
-let touchCurrent = 0;
-let lastTouchTime = 0;
-let snapTimeout = null;
-let isSnapping = false;
 
 // GESTION DU HOVER SCALE (désactivé sur mobile)
 let imageScales = new Map();
@@ -68,7 +63,7 @@ let loadProgress = 0;
 
 function simulateLoading() {
   const interval = setInterval(() => {
-    loadProgress += Math.floor(Math.random() * 8) + 4; // Plus rapide
+    loadProgress += Math.floor(Math.random() * 8) + 4; 
     if (loadProgress >= 100) {
       loadProgress = 100;
       clearInterval(interval);
@@ -93,7 +88,7 @@ function enterSite() {
 
   setTimeout(() => {
     initScroll();
-  }, isMobile ? 500 : 1000); // Plus rapide sur mobile
+  }, isMobile ? 100 : 1000); 
 }
 
 if(soundBtn && audio) {
@@ -136,12 +131,17 @@ menuLinks.forEach(link => {
     const targetSection = document.getElementById(targetId);
     
     if (targetSection) {
-      const targetX = targetSection.offsetLeft;
-      const offset = isMobile ? (window.innerWidth * 0.05) : (window.innerWidth * 0.1);
-      state.target = Math.max(0, Math.min(targetX - offset, state.limit));
+      if (isMobile) {
+        // SCROLL NATIF POUR MOBILE (Direct & Smooth)
+        targetSection.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+      } else {
+        // SCROLL JS POUR DESKTOP
+        const targetX = targetSection.offsetLeft;
+        const offset = window.innerWidth * 0.1;
+        state.target = Math.max(0, Math.min(targetX - offset, state.limit));
+      }
     }
     
-    // Réactiver le scroll après un court délai
     setTimeout(() => {
       isScrollActive = true;
     }, 100);
@@ -185,7 +185,6 @@ trackButtons.forEach(btn => {
   });
 });
 
-// Reset des boutons quand un track se termine
 allTrackAudios.forEach(trackAudio => {
   trackAudio.addEventListener('ended', () => {
     trackButtons.forEach(b => {
@@ -200,17 +199,14 @@ allTrackAudios.forEach(trackAudio => {
 function initScroll() {
   calculateLimit();
   
-  // Event listeners avec options optimisées
   window.addEventListener('resize', debounce(calculateLimit, 250));
   
+  // Sur Desktop, on active le scroll hijack (Wheel)
   if (!isMobile) {
     window.addEventListener('wheel', handleScroll, { passive: false });
   }
   
-  // Touch events pour mobile
-  window.addEventListener('touchstart', handleTouchStart, { passive: true });
-  window.addEventListener('touchmove', handleTouchMove, { passive: false });
-  window.addEventListener('touchend', handleTouchEnd, { passive: true });
+  // Sur Mobile, on NE FAIT RIEN. On laisse le CSS (overflow-x: scroll) gérer.
   
   isScrollActive = true;
   requestAnimationFrame(raf);
@@ -224,150 +220,84 @@ function calculateLimit() {
 
 function handleScroll(e) {
   if(!isScrollActive) return;
+  // Uniquement sur Desktop
   e.preventDefault();
   state.target += (e.deltaY + e.deltaX) * CONFIG.sensitivity;
   state.target = Math.max(0, Math.min(state.target, state.limit));
 }
 
-let touchStartX = 0;
-let touchMoveX = 0;
-
-function handleTouchStart(e) {
-  if(!isScrollActive) return;
-  touchStartX = e.touches[0].clientX;
-  touchMoveX = touchStartX;
-  lastTouchTime = Date.now();
-}
-
-function handleTouchMove(e) {
-  if(!isScrollActive) return;
-  
-  // Prévenir le scroll natif
-  if (Math.abs(e.touches[0].clientX - touchStartX) > 10) {
-    e.preventDefault();
-  }
-  
-  touchMoveX = e.touches[0].clientX;
-  const delta = (touchStartX - touchMoveX) * (isMobile ? 1 : 3); // Réduit de 2 à 1.2 pour plus de sensibilité
-  state.target += delta;
-  state.target = Math.max(0, Math.min(state.target, state.limit));
-  touchStartX = touchMoveX;
-}
-
-function handleTouchEnd(e) {
-  if(!isScrollActive) return;
-  
-  // Ajouter de l'inertie au swipe sur mobile
-  if (isMobile) {
-    const touchDuration = Date.now() - lastTouchTime;
-    const touchDistance = touchMoveX - touchStartX;
-    
-    if (touchDuration < 250 && Math.abs(touchDistance) > 15) { // Seuil réduit de 50 à 30px, durée augmentée
-      // Swipe rapide détecté
-      const velocity = touchDistance / touchDuration;
-      state.target -= velocity * 300; // Augmenté de 200 à 300 pour plus de momentum
-      state.target = Math.max(0, Math.min(state.target, state.limit));
-    }
-    
-    // Activer le snap après un court délai
-    clearTimeout(snapTimeout);
-    snapTimeout = setTimeout(() => {
-      snapToNearestSection();
-    }, 150);
-  }
-}
-
-// Fonction pour trouver et snapper sur la section la plus proche (mobile uniquement)
-function findNearestSection() {
-  if (!isMobile) return null;
-  
-  const sections = Array.from(animatedSections);
-  const viewportCenter = window.innerWidth / 2;
-  let nearestSection = null;
-  let minDistance = Infinity;
-  
-  sections.forEach(section => {
-    const sectionLeft = section.offsetLeft;
-    const sectionCenter = sectionLeft + (section.offsetWidth / 2);
-    const distanceFromCenter = Math.abs((sectionCenter - state.current) - viewportCenter);
-    
-    if (distanceFromCenter < minDistance) {
-      minDistance = distanceFromCenter;
-      nearestSection = section;
-    }
-  });
-  
-  return nearestSection;
-}
-
-function snapToNearestSection() {
-  if (!isMobile || isSnapping) return;
-  
-  const nearest = findNearestSection();
-  if (!nearest) return;
-  
-  isSnapping = true;
-  
-  // Calculer la position cible pour centrer la section
-  const sectionLeft = nearest.offsetLeft;
-  const offset = window.innerWidth * 0.05; // Petit offset sur les bords
-  
-  // Animation douce vers la section
-  state.target = Math.max(0, Math.min(sectionLeft - offset, state.limit));
-  
-  // Réactiver le scroll après l'animation
-  setTimeout(() => {
-    isSnapping = false;
-  }, 600);
-}
-
 // --- 5. BOUCLE D'ANIMATION (RAF) ---
 
 function raf() {
-  // LERP SCROLL
-  state.current = lerp(state.current, state.target, CONFIG.lerp);
   
-  // SKEW EFFECT (desktop uniquement)
-  const velocity = state.target - state.current;
-  const skew = CONFIG.skewSensitivity * velocity;
-  
-  // Arrondi pour performance
-  const currentScroll = Math.round(state.current * 100) / 100;
-  
-  if(container) {
-    container.style.transform = `translate3d(${-currentScroll}px, 0, 0) skewX(${skew}deg)`;
-  }
-
-  // DETECTION DE VISIBILITÉ & PARALLAXE
-  const viewportWidth = window.innerWidth;
-
-  animatedSections.forEach(section => {
-    const sectionLeft = section.offsetLeft - currentScroll;
-    const sectionRight = sectionLeft + section.offsetWidth;
-    const triggerPoint = viewportWidth * 0.85;
-
-    if (sectionLeft < triggerPoint && sectionRight > 0) {
-      if (!section.classList.contains('is-in-view')) {
-        section.classList.add('is-in-view');
-      }
-    }
-
-    // PARALLAXE IMAGES (desktop uniquement)
-    if (!isMobile && sectionLeft < viewportWidth && sectionRight > 0) {
-      const img = section.querySelector('img');
-      if(img) {
-        const progress = (sectionLeft + section.offsetWidth / 2 - viewportWidth / 2) / (viewportWidth / 2);
-        const moveX = progress * 80;
+  // --- A. MOBILE : NATIVE SCROLL ---
+  if (isMobile) {
+    // On ne transforme PAS le container. On laisse le navigateur faire.
+    // On lit juste la position pour déclencher les animations "In View"
+    if(container) {
+      const currentScroll = container.scrollLeft;
+      
+      // Détection de visibilité (Simplifiée pour mobile)
+      animatedSections.forEach(section => {
+        // Centre de la section
+        const sectionCenter = section.offsetLeft + (section.offsetWidth / 2);
+        // Centre de l'écran
+        const screenCenter = currentScroll + (window.innerWidth / 2);
         
-        let s = imageScales.get(img) || { current: 1 };
-        if(imageScales.has(img)) {
-          s.current = lerp(s.current, s.target, 0.1);
+        // Si le centre de la section est proche du centre de l'écran
+        if (Math.abs(sectionCenter - screenCenter) < window.innerWidth * 0.4) {
+           section.classList.add('is-in-view');
         }
-        
-        img.style.transform = `translateX(${moveX}px) scale(${s.current})`;
-      }
+      });
     }
-  });
+  } 
+  
+  // --- B. DESKTOP : CUSTOM SCROLL ---
+  else {
+    // LERP SCROLL (Inertie)
+    state.current = lerp(state.current, state.target, CONFIG.lerp);
+    
+    // SKEW EFFECT
+    const velocity = state.target - state.current;
+    const skew = CONFIG.skewSensitivity * velocity;
+    
+    const currentScroll = Math.round(state.current * 100) / 100;
+    
+    if(container) {
+      container.style.transform = `translate3d(${-currentScroll}px, 0, 0) skewX(${skew}deg)`;
+    }
+
+    // DETECTION DE VISIBILITÉ & PARALLAXE
+    const viewportWidth = window.innerWidth;
+
+    animatedSections.forEach(section => {
+      const sectionLeft = section.offsetLeft - currentScroll;
+      const sectionRight = sectionLeft + section.offsetWidth;
+      const triggerPoint = viewportWidth * 0.85;
+
+      if (sectionLeft < triggerPoint && sectionRight > 0) {
+        if (!section.classList.contains('is-in-view')) {
+          section.classList.add('is-in-view');
+        }
+      }
+
+      // PARALLAXE IMAGES (Desktop only)
+      if (sectionLeft < viewportWidth && sectionRight > 0) {
+        const img = section.querySelector('img');
+        if(img) {
+          const progress = (sectionLeft + section.offsetWidth / 2 - viewportWidth / 2) / (viewportWidth / 2);
+          const moveX = progress * 80;
+          
+          let s = imageScales.get(img) || { current: 1 };
+          if(imageScales.has(img)) {
+            s.current = lerp(s.current, s.target, 0.1);
+          }
+          
+          img.style.transform = `translateX(${moveX}px) scale(${s.current})`;
+        }
+      }
+    });
+  }
 
   requestAnimationFrame(raf);
 }
@@ -401,7 +331,6 @@ function lerp(start, end, factor) {
   return start + (end - start) * factor;
 }
 
-// Fonction debounce pour optimiser les resize events
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
@@ -431,11 +360,11 @@ function initRollingText() {
       const lineInner = document.createElement('span');
       lineInner.className = 'anim-text-line-inner';
 
-      // Sur mobile, on simplifie (pas de rolling par lettre)
       if (isMobile) {
+        // Mobile simple
         lineInner.textContent = line.trim();
       } else {
-        // Desktop: effet rolling complet
+        // Desktop rolling
         line.trim().split('').forEach((char, charIndex) => {
           if (char === ' ') {
             const space = document.createElement('span');
@@ -462,29 +391,15 @@ function initRollingText() {
   });
 }
 
-// --- 8. PRÉVENTION DU PULL-TO-REFRESH SUR MOBILE ---
+// --- 8. PREVENT PULL-TO-REFRESH (Mobile Only) ---
+// Utile pour éviter le reload quand on swipe fort sur les bords
 
 if (isMobile) {
-  let lastY = 0;
-  
-  document.body.addEventListener('touchstart', (e) => {
-    lastY = e.touches[0].clientY;
-  }, { passive: true });
-  
-  document.body.addEventListener('touchmove', (e) => {
-    const currentY = e.touches[0].clientY;
-    const isScrollingVertically = Math.abs(currentY - lastY) > Math.abs(e.touches[0].clientX - touchStartX);
-    
-    // Empêcher le pull-to-refresh si on scroll horizontalement
-    if (!isScrollingVertically && window.scrollY === 0) {
-      e.preventDefault();
-    }
-  }, { passive: false });
+  document.body.style.overscrollBehaviorY = 'none';
 }
 
 // --- 9. GESTION DES ERREURS AUDIO ---
 
-// Gestion des erreurs de lecture audio
 allTrackAudios.forEach(trackAudio => {
   trackAudio.addEventListener('error', (e) => {
     console.warn('Audio loading error:', e);
@@ -497,29 +412,6 @@ if (audio) {
   });
 }
 
-// --- 10. OPTIMISATION PERFORMANCES ---
-
-// Réduire la fréquence du RAF sur mobile si batterie faible
-let rafThrottle = 1;
-if (isMobile && 'getBattery' in navigator) {
-  navigator.getBattery().then(battery => {
-    if (battery.level < 0.2) {
-      rafThrottle = 2; // Skip every other frame
-    }
-  });
-}
-
-let rafCounter = 0;
-const originalRaf = raf;
-raf = function() {
-  rafCounter++;
-  if (rafCounter % rafThrottle === 0) {
-    originalRaf();
-  } else {
-    requestAnimationFrame(raf);
-  }
-}
-
 // --- LANCEMENT ---
 initRollingText();
 if (!isMobile) {
@@ -527,6 +419,4 @@ if (!isMobile) {
 }
 simulateLoading();
 
-// Log pour debug
-console.log('Mobile detected:', isMobile);
-console.log('Config:', CONFIG);
+console.log('Mode:', isMobile ? 'Mobile (Native Scroll)' : 'Desktop (Custom Scroll)');

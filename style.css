@@ -400,331 +400,96 @@ body.is-loaded .cover-section .meta-data {
 ======================================== */
 
 @media (max-width: 768px) {
-  /* DÉSACTIVER LES EFFETS LOURDS POUR PERFORMANCES */
-  * {
-    will-change: auto !important;
-  }
+  /* --- 1. DÉSACTIVATION DU LAYOUT JS ET ACTIVATION DU SCROLL NATIF --- */
   
-  body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  /* UI FIXE - Optimisation tactile */
-  .fixed-ui {
-    top: 1rem;
-    left: 1rem;
-    right: 1rem;
-  }
-
-  .counter-wrap {
-    justify-content: center;
-  }
-  .counter-wrap #loader-count {
-    font-size: 30vw;
-  }
-  
-  .logo, .sound-btn {
-    font-size: 0.65rem;
-  }
-  
-  .ui-right {
-    gap: 1rem;
-  }
-  
-  .menu-btn {
-    width: 32px;
-    padding: 0.5rem;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  .burger-line {
-    height: 2.5px;
-  }
-  
-  /* MENU OVERLAY - Optimisation tactile */
-  #menu-overlay {
-    padding: 1.5rem;
-  }
-  
-  #close-menu {
-    top: 1rem;
-    right: 1rem;
-    width: 50px;
-    height: 50px;
-    font-size: 1.3rem;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  .menu-container {
-    padding-left: 1rem;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .menu-link {
-    font-size: 12vw;
-    padding-bottom: 1.2rem;
-    margin-bottom: 0.8rem;
-    -webkit-tap-highlight-color: transparent;
-    opacity: 1 !important;
-  }
-  
-  .menu-list:hover .menu-link:not(:hover) {
-    opacity: 1 !important;
-  }
-  
-  .idx {
-    font-size: 0.85rem;
-    margin-right: 1.2rem;
-    margin-top: 0.5rem;
-  }
-  
-  .menu-footer {
-    bottom: 1.5rem;
-    left: 1.5rem;
-    right: 1.5rem;
-    font-size: 0.6rem;
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-  
-  /* SCROLL CONTAINER - Optimisation mobile */
+  /* On force le container à utiliser le scroll natif horizontal */
   #scroll-container {
-    padding: 0 5vw;
-    align-items: flex-start;
-    padding-top: 5vh;
-    padding-bottom: 10vh; /* Espace en bas pour éviter la coupure */
-    padding-bottom: max(10vh, env(safe-area-inset-bottom, 10vh));
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll !important; /* Force le scroll */
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory; /* L'effet aimanté "TikTok" */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; /* Physique iOS native */
+    
+    /* On annule les transformations JS */
+    transform: none !important; 
+    width: 100vw;
+    height: 100vh;
+    padding: 0 !important; /* Pas de padding pour coller aux bords */
+    
+    /* Position absolue pour garantir qu'il prend tout l'écran */
+    position: absolute;
+    top: 0;
+    left: 0;
   }
+  .counter-wrap { justify-content: center; font-size: 20vh;}
+
+  /* --- 2. SECTIONS PLEIN ÉCRAN --- */
   
-  /* SECTIONS - Largeur adaptée mobile */
   .gallery-item {
-    width: 90vw;
-    height: auto;
+    /* Largeur 100% écran pour effet immersif */
+    width: 100vw !important; 
+    height: 100vh !important;
     min-height: 100vh;
-    margin-right: 10vw;
-    padding: 2rem 0 4rem 0; /* Plus de padding en bas */
-  }
-  
-  /* COVER SECTION - Mobile optimisé */
-  .cover-section {
-    width: 90vw;
-    padding-left: 0;
-    min-height: 100vh;
-    justify-content: center;
-  }
-  
-  .meta-data {
-    width: 100%;
-    font-size: 0.55rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .main-cover {
-    width: 85vw;
-    height: 85vw;
-    margin-bottom: -3rem;
-    align-self: center;
-  }
-  
-  .main-title {
-    font-size: 18vw;
-    line-height: 0.85;
-    text-align: center;
-    width: 100%;
-  }
-  
-  /* TRACK SECTIONS - Layout vertical mobile */
-  .track-section {
-    width: 90vw;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 1.5rem;
-    padding: 3rem 0 5rem 0; /* Plus de padding en bas */
-  }
-  
-  .track-info {
-    font-size: 0.65rem;
-    margin-bottom: 1rem;
-    width: 100%;
-  }
-  
-  .track-number {
-    font-size: 1.8rem;
-  }
-  
-  .track-meta {
-    font-size: 0.6rem;
-  }
-  
-  /* TITRES - Taille adaptée */
-  .track-title {
-    font-size: 12vw;
-    line-height: 0.9;
-    margin-bottom: 1rem;
-  }
-  
-  /* Désactiver l'effet rolling sur mobile pour performances */
-  .track-title:hover .char-orig {
-    transform: none;
-  }
-  
-  .track-title:hover .char-clone {
-    transform: translateY(120%);
-  }
-  
-  /* IMAGES - Optimisation mobile */
-  .image-wrapper {
-    width: 100%;
-    height: 50vh;
-    margin-bottom: 1.5rem;
-  }
-  
-  .image-wrapper img {
-    height: 110%;
-    top: -5%;
-    /* Désactiver parallaxe sur mobile */
-    transform: translateX(0) !important;
-  }
-  
-  /* Désactiver hover scale sur mobile */
-  .image-wrapper:hover img {
-    transform: translateX(0) scale(1) !important;
-  }
-  
-  .small-image,
-  .tall-image {
-    width: 100%;
-    height: 50vh;
-    align-self: flex-start;
-  }
-  
-  /* SECTIONS INVERTED - Réorganisation mobile */
-  .inverted {
-    flex-direction: column;
-    justify-content: flex-start;
-  }
-  
-  .inverted .image-wrapper {
-    order: 1;
-    margin-bottom: 1.5rem;
-  }
-  
-  .inverted .track-details {
-    order: 2;
-    padding-bottom: 2rem; /* Espace supplémentaire */
-  }
-  
-  .content-wrapper {
-    width: 100%;
+    margin-right: 0 !important; /* On retire les marges */
+    padding: 0 !important;
+    
+    /* Le point d'accroche magnétique */
+    scroll-snap-align: start;
+    scroll-snap-stop: always; /* Force l'arrêt sur chaque section (comme TikTok) */
+    
+    flex-shrink: 0; /* Empêche l'écrasement */
+    
+    /* Centrage du contenu */
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
   }
-  
-  .title-group {
-    order: 2;
+
+  /* Ajustements spécifiques pour le contenu centré */
+  .cover-section {
+    width: 100vw !important;
+    padding-left: 0 !important;
+    align-items: center !important;
   }
-  
-  .title-group .image-wrapper {
-    order: 1;
+
+  .track-section {
+    padding: 2rem !important; /* Un peu de marge interne pour le texte */
+    box-sizing: border-box;
   }
-  
-  /* BOUTONS AUDIO - Zone tactile optimisée */
-  .play-track-btn {
-    font-size: 0.75rem;
-    padding: 0.75rem 1.5rem;
-    margin-bottom: 3rem; /* Plus d'espace en bas */
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-  }
-  
-  /* CREDITS - Adaptation mobile */
-  .credits-section {
-    width: 90vw;
-    height: auto;
-    min-height: 100vh;
-    padding: 3rem 2rem;
-  }
-  
-  .credits-list h3 {
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
-  }
-  
-  .credits-list ul {
-    font-size: 0.8rem;
-    margin-bottom: 3rem;
-  }
-  
-  .buy-btn {
-    padding: 1rem 2rem;
-    font-size: 0.75rem;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  /* LOADER - Adaptation mobile */
-  .counter-wrap {
-    font-size: 20vw;
-  }
-  
-  .symbol {
-    font-size: 4vw;
-    margin-top: 3vw;
-  }
-  
-  .loader-text {
-    font-size: 0.6rem;
-    text-align: center;
-    padding: 0 2rem;
-  }
-  
-  #enter-btn {
-    padding: 1rem 2rem;
-    font-size: 0.75rem;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  /* CURSEUR - Désactivé sur mobile */
-  #cursor {
-    display: none;
-  }
-  
-  /* NOISE - Réduit sur mobile pour performances */
-  .noise-overlay {
-    opacity: 0.02;
-  }
-  
-  /* DÉSACTIVER ANIMATIONS COMPLEXES SUR MOBILE */
-  .anim-text-line-inner {
-    transform: translateY(0) rotate(0deg) !important;
-    transition: none;
-  }
-  
+
+  /* On s'assure que les images prennent bien la place mais restent derrière le texte */
   .image-wrapper {
-    clip-path: inset(0 0 0 0) !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: -1;
+    margin: 0 !important;
+    opacity: 0.6; /* Un peu plus sombre pour lire le texte par dessus */
   }
-  
-  .image-wrapper img {
-    transform: scale(1) !important;
+
+  /* Le texte doit passer au premier plan */
+  .content-wrapper, .track-details, .track-info, .meta-data, .main-title {
+    z-index: 10;
+    position: relative;
+    text-align: center; /* Centrage style TikTok */
   }
-  
-  /* OPTIMISATION TOUCH */
-  a, button, .menu-link {
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    user-select: none;
+
+  /* Réajustement des titres pour le mode centré */
+  .track-title {
+    font-size: 15vw !important;
+    text-align: center;
+    width: 100%;
   }
-  
-  /* ANIMATIONS LÉGÈRES ACTIVÉES UNIQUEMENT */
-  .is-in-view .meta-data, 
-  .is-in-view .track-info,
-  .is-in-view .play-track-btn,
-  .is-in-view .track-number {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.6s ease;
+
+  .meta-data {
+    width: 90%;
+    margin: 0 auto 2rem auto;
   }
 }
 
