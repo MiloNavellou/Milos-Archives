@@ -5,7 +5,7 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 
 const CONFIG = {
   sensitivity: isMobile ? 1.5 : 2, 
-  lerp: isMobile ? 0.08 : 0.05, // Plus rapide sur mobile
+  lerp: isMobile ? 0.12 : 0.05, // Augmenté de 0.08 à 0.12 pour plus de réactivité
   skewSensitivity: isMobile ? 0 : 0.005 // Désactivé sur mobile pour performances
 }
 
@@ -248,7 +248,7 @@ function handleTouchMove(e) {
   }
   
   touchMoveX = e.touches[0].clientX;
-  const delta = (touchStartX - touchMoveX) * (isMobile ? 2 : 3);
+  const delta = (touchStartX - touchMoveX) * (isMobile ? 1.2 : 3); // Réduit de 2 à 1.2 pour plus de sensibilité
   state.target += delta;
   state.target = Math.max(0, Math.min(state.target, state.limit));
   touchStartX = touchMoveX;
@@ -262,10 +262,10 @@ function handleTouchEnd(e) {
     const touchDuration = Date.now() - lastTouchTime;
     const touchDistance = touchMoveX - touchStartX;
     
-    if (touchDuration < 200 && Math.abs(touchDistance) > 50) {
+    if (touchDuration < 250 && Math.abs(touchDistance) > 30) { // Seuil réduit de 50 à 30px, durée augmentée
       // Swipe rapide détecté
       const velocity = touchDistance / touchDuration;
-      state.target -= velocity * 200; // Ajouter momentum
+      state.target -= velocity * 300; // Augmenté de 200 à 300 pour plus de momentum
       state.target = Math.max(0, Math.min(state.target, state.limit));
     }
     

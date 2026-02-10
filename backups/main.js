@@ -20,6 +20,8 @@ let isScrollActive = false;
 let touchStart = 0;
 let touchCurrent = 0;
 let lastTouchTime = 0;
+let snapTimeout = null;
+let isSnapping = false;
 
 // GESTION DU HOVER SCALE (désactivé sur mobile)
 let imageScales = new Map();
@@ -84,14 +86,12 @@ function enterSite() {
   }
   
   document.body.classList.add('is-loaded');
-  
-  // Animation d'entrée pour la Cover Section
-  const cover = document.querySelector('.cover-section');
+    const cover = document.querySelector('.cover-section');
   if(cover) cover.classList.add('is-in-view');
 
   setTimeout(() => {
     initScroll();
-  }, isMobile ? 500 : 1000); // Plus rapide sur mobile
+  }, isMobile ? 500 : 1000);
 }
 
 if(soundBtn && audio) {
@@ -266,7 +266,57 @@ function handleTouchEnd(e) {
       state.target -= velocity * 200; // Ajouter momentum
       state.target = Math.max(0, Math.min(state.target, state.limit));
     }
+    
+    // Activer le snap après un court délai
+    clearTimeout(snapTimeout);
+    snapTimeout = setTimeout(() => {
+      snapToNearestSection();
+    }, 150);
   }
+}
+
+// Fonction pour trouver et snapper sur la section la plus proche (mobile uniquement)
+function findNearestSection() {
+  if (!isMobile) return null;
+  
+  const sections = Array.from(animatedSections);
+  const viewportCenter = window.innerWidth / 2;
+  let nearestSection = null;
+  let minDistance = Infinity;
+  
+  sections.forEach(section => {
+    const sectionLeft = section.offsetLeft;
+    const sectionCenter = sectionLeft + (section.offsetWidth / 2);
+    const distanceFromCenter = Math.abs((sectionCenter - state.current) - viewportCenter);
+    
+    if (distanceFromCenter < minDistance) {
+      minDistance = distanceFromCenter;
+      nearestSection = section;
+    }
+  });
+  
+  return nearestSection;
+}
+
+function snapToNearestSection() {
+  if (!isMobile || isSnapping) return;
+  
+  const nearest = findNearestSection();
+  if (!nearest) return;
+  
+  isSnapping = true;
+  
+  // Calculer la position cible pour centrer la section
+  const sectionLeft = nearest.offsetLeft;
+  const offset = window.innerWidth * 0.05; // Petit offset sur les bords
+  
+  // Animation douce vers la section
+  state.target = Math.max(0, Math.min(sectionLeft - offset, state.limit));
+  
+  // Réactiver le scroll après l'animation
+  setTimeout(() => {
+    isSnapping = false;
+  }, 600);
 }
 
 // --- 5. BOUCLE D'ANIMATION (RAF) ---
