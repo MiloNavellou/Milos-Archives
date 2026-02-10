@@ -493,9 +493,8 @@ body.is-loaded .cover-section .meta-data {
   #scroll-container {
     padding: 0 5vw;
     align-items: flex-start;
-    padding-top: 15vh;
+    padding-top: 5vh;
     padding-bottom: 10vh; /* Espace en bas pour éviter la coupure */
-    /* Support safe-area pour devices avec notch */
     padding-bottom: max(10vh, env(safe-area-inset-bottom, 10vh));
   }
   
