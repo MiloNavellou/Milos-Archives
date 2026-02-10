@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Milos | Iceland Archives</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Archivo:wght@800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    
+    <div id="loader">
+      <div class="loader-content">
+        <div class="counter-wrap">
+          <span id="loader-count">000</span>
+          <span class="symbol">%</span>
+        </div>
+        <div class="loader-text">INITIALISATION DU SYSTÈME // MILOS_ARCHIVES</div>
+      </div>
+      <button id="enter-btn">ENTRER DANS L'ARCHIVE</button>
+    </div>
+
+    <nav class="fixed-ui">
+      <div class="logo">MILOS / ARCHIVES</div>
+      <div class="ui-right">
+        <div id="sound-toggle" class="sound-btn">SOUND <span class="state">OFF</span></div>
+        <button id="menu-trigger" class="menu-btn">
+          <span class="burger-line"></span>
+          <span class="burger-line"></span>
+        </button>
+      </div>
+    </nav>
+
+    <div id="menu-overlay">
+      <button id="close-menu">✕</button>
+      
+      <div class="menu-container">
+        <nav class="menu-list">
+          <a href="#" class="menu-link" data-target="sec-intro">
+            <span class="idx">01</span>
+            <span class="lbl">BURNT</span>
+          </a>
+          <a href="#" class="menu-link" data-target="sec-01">
+            <span class="idx">02</span>
+            <span class="lbl">TRACK 02</span>
+          </a>
+          <a href="#" class="menu-link" data-target="sec-02">
+            <span class="idx">03</span>
+            <span class="lbl">TRACK 03</span>
+          </a>
+          <a href="#" class="menu-link" data-target="sec-03">
+            <span class="idx">04</span>
+            <span class="lbl">TRACK 04</span>
+          </a>
+          <a href="#" class="menu-link" data-target="sec-04">
+            <span class="idx">05</span>
+            <span class="lbl">TRACK 05</span>
+          </a>
+          <a href="#" class="menu-link" data-target="sec-credits">
+            <span class="idx">06</span>
+            <span class="lbl">TRACK 06</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="menu-footer">
+        <span>DATE DE SORTIE</span>
+        <span>MILOS ARCHIVES</span>
+      </div>
+    </div>
+
+    <main id="viewport">
+      <div id="scroll-container">
+        
+        <section id="sec-intro" class="gallery-item cover-section">
+          <div class="meta-data">
+            <span>NOM DE L'ALBUM</span>
+            <span>MILOS</span>
+          </div>
+          <div class="image-wrapper main-cover">
+            <img src="https://images.unsplash.com/photo-1490598000245-075175152d25?q=80&w=2000&auto=format&fit=crop" alt="Album Cover" />
+          </div>
+          <h1 class="main-title">MILOS<br>ARCHIVES</h1>
+        </section>
+
+        <section id="sec-01" class="gallery-item track-section">
+          <div class="track-info">
+            <span class="track-number">01</span>
+            <div class="track-meta">Korg Volca Keys</div>
+          </div>
+          <div class="content-wrapper">
+            <div class="title-group">
+              <h2 class="track-title">BURNT</h2>
+              <button class="play-track-btn" data-track="1">▶ PREVIEW</button>
+              <audio id="track-1" class="track-audio" src="src/audio/burnt.mp3"></audio>
+            </div>
+            <div class="image-wrapper small-image">
+              <img src="https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1000&auto=format&fit=crop" alt="Track 1 visual" />
+            </div>
+          </div>
+        </section>
+
+        <section id="sec-02" class="gallery-item track-section inverted">
+          <div class="image-wrapper tall-image">
+            <img src="https://images.unsplash.com/photo-1520690214124-2405c5217036?q=80&w=1000&auto=format&fit=crop" alt="Track 2 visual" />
+          </div>
+          <div class="track-details">
+            <span class="track-number">02</span>
+            <h2 class="track-title">STATIC</h2>
+            <button class="play-track-btn" data-track="2">▶ PREVIEW</button>
+            <audio id="track-2" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-minimal-techno-vibe-music-999.mp3"></audio>
+          </div>
+        </section>
+
+        <section id="sec-03" class="gallery-item track-section">
+          <div class="track-info">
+            <span class="track-number">03</span>
+            <div class="track-meta">124 BPM / KEY: Gm</div>
+          </div>
+          <div class="content-wrapper">
+            <div class="title-group">
+              <h2 class="track-title">FRACTURE<br>SYSTEMS</h2>
+              <button class="play-track-btn" data-track="3">▶ PREVIEW</button>
+              <audio id="track-3" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-slow-tape-thriller-bass-1000.mp3"></audio>
+            </div>
+            <div class="image-wrapper small-image">
+              <img src="https://images.unsplash.com/photo-1504700610630-ac6aba3536d3?q=80&w=1000&auto=format&fit=crop" alt="Track 3 visual" />
+            </div>
+          </div>
+        </section>
+
+        <section id="sec-04" class="gallery-item track-section inverted">
+          <div class="image-wrapper tall-image">
+            <img src="https://images.unsplash.com/photo-1519904981063-b0cf448d479e?q=80&w=1000&auto=format&fit=crop" alt="Track 4 visual" />
+          </div>
+          <div class="track-details">
+            <span class="track-number">04</span>
+            <h2 class="track-title">AURAL<br>SECTOR</h2>
+            <button class="play-track-btn" data-track="4">▶ PREVIEW</button>
+            <audio id="track-4" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-driving-ambition-810.mp3"></audio>
+          </div>
+        </section>
+
+        <section id="sec-05" class="gallery-item track-section">
+          <div class="track-info">
+            <span class="track-number">05</span>
+            <div class="track-meta">115 BPM / KEY: Fmaj</div>
+          </div>
+          <div class="content-wrapper">
+            <div class="title-group">
+              <h2 class="track-title">ZERO<br>KELVIN</h2>
+              <button class="play-track-btn" data-track="5">▶ PREVIEW</button>
+              <audio id="track-5" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-deep-urban-623.mp3"></audio>
+            </div>
+            <div class="image-wrapper small-image">
+              <img src="https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=1000&auto=format&fit=crop" alt="Track 5 visual" />
+            </div>
+          </div>
+        </section>
+
+        <section id="sec-06" class="gallery-item track-section inverted">
+          <div class="image-wrapper tall-image">
+            <img src="https://images.unsplash.com/photo-1465056836041-7f43ac27dcb5?q=80&w=1000&auto=format&fit=crop" alt="Track 6 visual" />
+          </div>
+          <div class="track-details">
+            <span class="track-number">06</span>
+            <h2 class="track-title">FINAL<br>ECHOES</h2>
+            <button class="play-track-btn" data-track="6">▶ PREVIEW</button>
+            <audio id="track-6" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3"></audio>
+          </div>
+        </section>
+
+        <section id="sec-credits" class="gallery-item credits-section">
+          <div class="credits-list">
+            <h3>CREDITS</h3>
+            <ul>
+              <li>PRODUCED BY MILOS</li>
+              <li>MIXED By MILOS</li>
+              <li>ARTWORK BY MILOS</li>
+            </ul>
+            <a href="#" class="buy-btn">STREAM / BUY ALBUM</a>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <audio id="audio-player" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-minimal-techno-vibe-music-999.mp3" type="audio/mp3">
+    </audio>
+    <script type="module" src="/main.js"></script>
+    <div class="noise-overlay"></div>
+    <div id="cursor"></div>
+  </body>
+</html>

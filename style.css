@@ -1,0 +1,488 @@
+:root {
+  --bg-color: #F3F4F6;
+  --text-color: #1F2937;
+  --accent-color: #9CA3AF;
+  --menu-bg: #1b7a8f;
+  --menu-text: #E5E5E5;
+  --font-main: 'Inter', sans-serif;
+  --font-display: 'Archivo', sans-serif;
+  --font-tech: 'JetBrains Mono', monospace;
+  --font-serif: 'Archivo', sans-serif; /* NOUVEAU POUR LE MENU */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* UI FIXE */
+.fixed-ui {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  right: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 500;
+  mix-blend-mode: exclusion;
+  color: white; 
+}
+
+.logo, .sound-btn {
+  font-family: var(--font-tech);
+  font-size: 0.7rem;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.ui-right {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.sound-btn {
+  cursor: pointer;
+}
+
+/* BOUTON MENU BURGER */
+.menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 30px;
+}
+
+.burger-line {
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  transition: all 0.3s;
+}
+
+.menu-btn:hover .burger-line:first-child { width: 100%; }
+.menu-btn:hover .burger-line:last-child { width: 70%; }
+
+/* --- LE MENU OVERLAY (STYLE REFERENCE) --- */
+#menu-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background-color: var(--menu-bg);
+  z-index: 2000;
+  display: flex; flex-direction: column;
+  padding: 2rem;
+  transform: translateY(-100%);
+  transition: transform 0.6s cubic-bezier(0.8, 0, 0.2, 1);
+  color: var(--menu-text);
+}
+
+#menu-overlay.active {
+  transform: translateY(0);
+}
+
+#close-menu {
+  position: absolute; top: 2rem; right: 2rem;
+  width: 60px; height: 60px; border-radius: 50%;
+  background: transparent; border: 1px solid rgba(255,255,255,0.2); 
+  color: white;
+  font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s;
+}
+#close-menu:hover { background: white; color: black; transform: rotate(90deg); }
+
+.menu-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 5vw;
+}
+
+.menu-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-link {
+  text-decoration: none;
+  color: var(--menu-text);
+  font-family: var(--font-serif); /* Police SERIF comme la ref */
+  font-size: 7vw;
+  line-height: 0.9;
+  text-transform: uppercase;
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  transition: opacity 0.3s;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 1rem;
+}
+
+.menu-link:hover {
+  opacity: 1;
+}
+.menu-list:hover .menu-link:not(:hover) {
+  opacity: 0.3; /* Focus sur l'élément survolé */
+}
+
+.idx {
+  font-family: var(--font-tech);
+  font-size: 1rem;
+  margin-right: 2rem;
+  margin-top: 1.5vw;
+  color: var(--accent-color);
+}
+
+.menu-footer {
+  position: absolute; bottom: 2rem; left: 2rem; right: 2rem;
+  display: flex; justify-content: space-between;
+  font-family: var(--font-tech); font-size: 0.7rem; opacity: 0.5;
+}
+
+
+/* --- LAYOUT DU SCROLL (CORRECTIF BUG) --- */
+#viewport {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  overflow: hidden;
+}
+
+#scroll-container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: fit-content;
+  will-change: transform;
+  padding: 0 10vw;
+  align-items: center;
+}
+
+.gallery-item {
+  height: 70vh;
+  width: 40vw; /* Largeur fixe */
+  margin-right: 8vw;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-shrink: 0; /* CRUCIAL : EMPÊCHE L'ÉCRASEMENT */
+}
+
+/* COVER SECTION */
+.cover-section { width: 50vw; align-items: flex-start; padding-left: 5vw; }
+.meta-data {
+  font-family: var(--font-tech); font-size: 0.6rem;
+  display: flex; justify-content: space-between; width: 300px;
+  margin-bottom: 1rem; border-bottom: 1px solid currentColor; padding-bottom: 0.5rem;
+}
+.main-cover {
+  width: 30vw; height: 30vw; /* Carré */
+  margin-bottom: -4rem; z-index: 1;
+}
+.main-title {
+  font-family: var(--font-display); font-weight: 800; text-transform: uppercase;
+  font-size: 10vw; line-height: 0.8; z-index: 2;
+  mix-blend-mode: difference; color: var(--menu-bg);
+  pointer-events: none;
+}
+
+/* TRACK SECTIONS */
+.track-section {
+  width: 35vw;
+  justify-content: space-between;
+  padding: 5vh 0;
+}
+.track-info {
+  border-top: 1px solid var(--text-color);
+  padding-top: 0.5rem;
+  display: flex; justify-content: space-between;
+  font-family: var(--font-tech); margin-bottom: 2rem; font-size: 0.7rem;
+}
+.track-number { font-size: 1.5rem; font-weight: bold; font-family: var(--font-tech)}
+
+/* TITRES REMPLIS (PAS OUTLINE) */
+.track-title {
+  font-family: var(--font-display); font-weight: 800; text-transform: uppercase;
+  font-size: 4vw; line-height: 0.9; margin-bottom: 1rem;
+  color: var(--text-color); /* Couleur pleine */
+  /* -webkit-text-stroke retiré pour éviter le bug visuel */
+}
+
+/* IMAGES & HOVER SCALE */
+.image-wrapper {
+  width: 100%; height: 100%; overflow: hidden; position: relative;
+}
+
+.image-wrapper img {
+  width: 100%; height: 120%; object-fit: cover; position: absolute;
+  top: -10%; left: 0;
+  filter: grayscale(10%) contrast(105%);
+ 
+}
+.image-wrapper:hover img {
+  transform: scale(1.2);
+}
+
+.small-image { width: 80%; height: 35vh; align-self: flex-end; }
+.tall-image { width: 100%; height: 50vh; }
+.inverted { flex-direction: column-reverse; justify-content: flex-end; }
+.inverted .image-wrapper { margin-bottom: 2rem; }
+
+/* PLAYERS */
+.play-track-btn {
+  background: transparent; border: 1px solid currentColor; color: var(--text-color);
+  font-family: var(--font-tech); font-size: 0.7rem; padding: 0.5rem 1rem;
+  cursor: pointer; text-transform: uppercase; margin-top: 0.5rem; transition: all 0.3s;
+  margin-bottom: 2rem;
+}
+.play-track-btn:hover, .play-track-btn.playing { background: var(--text-color); color: var(--bg-color); }
+
+/* CREDITS */
+.credits-section {
+  width: 30vw; background: #111; color: white; padding: 3rem; height: 100vh;
+  margin-right: 0; justify-content: center;
+}
+.credits-list ul { list-style: none; font-family: var(--font-tech); margin-bottom: 4rem; opacity: 0.7; line-height: 1.6; }
+.buy-btn {
+  display: inline-block; border: 1px solid white; color: white; padding: 1rem 2rem;
+  text-decoration: none; font-family: var(--font-tech); text-transform: uppercase; transition: all 0.3s;
+}
+.buy-btn:hover { background: white; color: black; }
+
+/* NOISE & CURSOR */
+.noise-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 999; opacity: 0.05;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+#cursor {
+  position: fixed; top: 0; left: 0; width: 20px; height: 20px;
+  border: 1px solid var(--text-color); border-radius: 50%; pointer-events: none;
+  z-index: 1000; transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s, background-color 0.3s; mix-blend-mode: difference;
+}
+body.hovered #cursor { width: 50px; height: 50px; background-color: white; border-color: white; }
+
+/* LOADER */
+#loader {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #050505;
+  z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;
+  color: #fff; transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+}
+body.is-loaded #loader { transform: translateY(-100%); }
+.counter-wrap { font-family: var(--font-display); font-size: 15vw; font-weight: 800; line-height: 1; display: flex; }
+.symbol { font-size: 2vw; align-self: flex-start; margin-top: 2vw; font-family: var(--font-tech); }
+.loader-text { font-family: var(--font-tech); font-size: 0.7rem; margin-top: 1rem; letter-spacing: 0.2em; opacity: 0.5; }
+#enter-btn {
+  margin-top: 3rem; background: transparent; border: 1px solid rgba(255,255,255,0.3);
+  color: white; padding: 1rem 3rem; font-family: var(--font-tech); cursor: pointer;
+  text-transform: uppercase; opacity: 0; pointer-events: none; transition: all 0.5s;
+}
+#enter-btn.visible { opacity: 1; pointer-events: auto; }
+#enter-btn:hover { background: white; color: black; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .menu-link { font-size: 10vw; }
+  .gallery-item, .cover-section, .track-section, .credits-section { width: 85vw; margin-right: 5vw; }
+  .main-cover { width: 80vw; height: 80vw; }
+  .main-title { font-size: 15vw; }
+  .track-section { flex-direction: column; justify-content: flex-start; }
+  .small-image, .tall-image { width: 100%; height: 40vh; align-self: flex-start; margin-bottom: 2rem; }
+  .inverted .image-wrapper { order: 2; }
+  .track-details, .content-wrapper { order: 1; }
+  #cursor { display: none; }
+}
+
+/* --- ROLLING TEXT EFFECT --- */
+
+/* Le conteneur de chaque lettre */
+.char-wrap {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  height: 1.1em; /* Ajusté pour la ligne de hauteur */
+  vertical-align: top;
+}
+
+/* Les lettres (originale et clone) */
+.char-orig, .char-clone {
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+  will-change: transform;
+}
+
+/* Position du clone (caché en bas au départ) */
+.char-clone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(120%);
+  color: var(--accent-color); /* Optionnel : couleur différente pour le roll */
+}
+
+/* L'espace doit être conservé */
+.char-space {
+  display: inline-block;
+  width: 0.3em;
+}
+
+/* --- TRIGGER HOVER --- */
+/* Au survol du titre, on active l'animation */
+.track-title:hover .char-orig {
+  transform: translateY(-100%);
+}
+
+.track-title:hover .char-clone {
+  transform: translateY(0);
+}
+
+/* --- ROLLING TEXT EFFECT --- */
+
+/* Le conteneur de chaque lettre */
+.char-wrap {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  height: 1.1em; /* Ajusté pour la ligne de hauteur */
+  vertical-align: top;
+}
+
+/* Les lettres (originale et clone) */
+.char-orig, .char-clone {
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+  will-change: transform;
+}
+
+/* Position du clone (caché en bas au départ) */
+.char-clone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(120%);
+  color: var(--accent-color); /* Optionnel : couleur différente pour le roll */
+}
+
+/* L'espace doit être conservé */
+.char-space {
+  display: inline-block;
+  width: 0.3em;
+}
+
+/* --- TRIGGER HOVER --- */
+/* Au survol du titre, on active l'animation */
+.track-title:hover .char-orig {
+  transform: translateY(-100%);
+}
+
+.track-title:hover .char-clone {
+  transform: translateY(0);
+}
+
+/* AJOUTER CECI À LA FIN DE VOTRE FICHIER style.css OU REMPLACER LES SECTIONS CORRESPONDANTES */
+
+/* --- AWWWARDS ANIMATIONS --- */
+
+/* 1. CONFIGURATION DES LIGNES DE TEXTE (POUR L'APPARITION) */
+/* On cible les spans générés par le JS pour l'effet d'entrée */
+.anim-text-line {
+  display: block;
+  overflow: hidden; /* Masque le texte qui arrive du bas */
+  margin-bottom: -0.2em; /* Ressert légèrement l'interlignage visuel */
+}
+
+/* Le contenu à l'intérieur de la ligne (qui va bouger) */
+.anim-text-line-inner {
+  display: block;
+  transform: translateY(110%) rotate(2deg); /* Départ : en bas et légèrement tourné */
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1); /* Easing "Expo" très smooth */
+  will-change: transform;
+  transform-origin: left center;
+}
+
+/* Quand la section devient visible */
+.is-in-view .anim-text-line-inner,
+body.is-loaded .cover-section .anim-text-line-inner {
+  transform: translateY(0) rotate(0deg);
+}
+
+/* Délais en cascade (Stagger) pour les lignes */
+.anim-text-line:nth-child(1) .anim-text-line-inner { transition-delay: 0.1s; }
+.anim-text-line:nth-child(2) .anim-text-line-inner { transition-delay: 0.2s; }
+.anim-text-line:nth-child(3) .anim-text-line-inner { transition-delay: 0.3s; }
+
+
+/* 2. IMAGE REVEAL (EFFET RIDEAU) */
+.image-wrapper {
+  /* État initial : Complètement "clippé" vers la gauche */
+  clip-path: inset(0 100% 0 0); 
+  transition: clip-path 1.5s cubic-bezier(0.77, 0, 0.175, 1); /* Quart Easing */
+  will-change: clip-path;
+}
+
+/* L'image à l'intérieur commence avec un zoom out */
+.image-wrapper img {
+  transform: scale(1.4); /* Zoom initial fort */
+  transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* État Activé */
+.is-in-view .image-wrapper,
+body.is-loaded .cover-section .image-wrapper {
+  clip-path: inset(0 0 0 0); /* Dévoilement total */
+}
+
+.is-in-view .image-wrapper img,
+body.is-loaded .cover-section .image-wrapper img {
+  transform: scale(1); /* L'image revient à sa taille normale pendant que le cadre s'ouvre */
+}
+
+
+/* 3. META DATA & BOUTONS (FADE UP SIMPLE) */
+.meta-data, .track-info, .play-track-btn, .track-number {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s ease, transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.is-in-view .meta-data, 
+.is-in-view .track-info,
+.is-in-view .play-track-btn,
+.is-in-view .track-number,
+body.is-loaded .cover-section .meta-data {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Délais spécifiques pour que tout n'arrive pas en même temps */
+.is-in-view .track-number { transition-delay: 0s; }
+.is-in-view .track-info { transition-delay: 0.2s; }
+.is-in-view .play-track-btn { transition-delay: 0.4s; }
+
+
+/* 4. MODIFICATION LOADER (EFFET RIDEAU VERS LE HAUT) */
+#loader {
+  /* On garde votre CSS, on ajoute juste une transition de couleur si besoin */
+  background-color: var(--menu-bg);
+}
+
+/* On force le conteneur principal à être en perspective pour des effets 3D subtils */
+#viewport {
+  perspective: 1000px;
+}
