@@ -3,25 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    
-    <!-- META TAGS OPTIMISÉS MOBILE -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="theme-color" content="#1b7a8f" />
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Milos | Iceland Archives</title>
-    
-    <!-- FONTS OPTIMISÉS AVEC PRECONNECT -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Archivo:wght@800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="./style.css" />
-    
-    <!-- PRELOAD POUR IMAGES CRITIQUES (optionnel) -->
-    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1490598000245-075175152d25?q=80&w=2000&auto=format&fit=crop" />
   </head>
   <body>
     
@@ -40,7 +27,7 @@
       <div class="logo">MILOS / ARCHIVES</div>
       <div class="ui-right">
         <div id="sound-toggle" class="sound-btn">SOUND <span class="state">OFF</span></div>
-        <button id="menu-trigger" class="menu-btn" aria-label="Open menu">
+        <button id="menu-trigger" class="menu-btn">
           <span class="burger-line"></span>
           <span class="burger-line"></span>
         </button>
@@ -48,7 +35,7 @@
     </nav>
 
     <div id="menu-overlay">
-      <button id="close-menu" aria-label="Close menu">✕</button>
+      <button id="close-menu">✕</button>
       
       <div class="menu-container">
         <nav class="menu-list">
@@ -94,7 +81,7 @@
             <span>MILOS</span>
           </div>
           <div class="image-wrapper main-cover">
-            <img src="https://images.unsplash.com/photo-1490598000245-075175152d25?q=80&w=2000&auto=format&fit=crop" alt="Album Cover" loading="eager" />
+            <img src="https://images.unsplash.com/photo-1490598000245-075175152d25?q=80&w=2000&auto=format&fit=crop" alt="Album Cover" />
           </div>
           <h1 class="main-title">MILOS<br>ARCHIVES</h1>
         </section>
@@ -107,24 +94,24 @@
           <div class="content-wrapper">
             <div class="title-group">
               <h2 class="track-title">BURNT</h2>
-              <button class="play-track-btn" data-track="1" aria-label="Play track 1">▶ PREVIEW</button>
-              <audio id="track-1" class="track-audio" src="src/audio/burnt.mp3" preload="metadata"></audio>
+              <button class="play-track-btn" data-track="1">▶ PREVIEW</button>
+              <audio id="track-1" class="track-audio" src="src/audio/burnt.mp3"></audio>
             </div>
             <div class="image-wrapper small-image">
-              <img src="https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1000&auto=format&fit=crop" alt="Track 1 visual" loading="lazy" />
+              <img src="https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1000&auto=format&fit=crop" alt="Track 1 visual" />
             </div>
           </div>
         </section>
 
         <section id="sec-02" class="gallery-item track-section inverted">
           <div class="image-wrapper tall-image">
-            <img src="https://images.unsplash.com/photo-1520690214124-2405c5217036?q=80&w=1000&auto=format&fit=crop" alt="Track 2 visual" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1520690214124-2405c5217036?q=80&w=1000&auto=format&fit=crop" alt="Track 2 visual" />
           </div>
           <div class="track-details">
             <span class="track-number">02</span>
             <h2 class="track-title">STATIC</h2>
-            <button class="play-track-btn" data-track="2" aria-label="Play track 2">▶ PREVIEW</button>
-            <audio id="track-2" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-minimal-techno-vibe-music-999.mp3" preload="metadata"></audio>
+            <button class="play-track-btn" data-track="2">▶ PREVIEW</button>
+            <audio id="track-2" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-minimal-techno-vibe-music-999.mp3"></audio>
           </div>
         </section>
 
@@ -136,24 +123,24 @@
           <div class="content-wrapper">
             <div class="title-group">
               <h2 class="track-title">FRACTURE<br>SYSTEMS</h2>
-              <button class="play-track-btn" data-track="3" aria-label="Play track 3">▶ PREVIEW</button>
-              <audio id="track-3" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-slow-tape-thriller-bass-1000.mp3" preload="metadata"></audio>
+              <button class="play-track-btn" data-track="3">▶ PREVIEW</button>
+              <audio id="track-3" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-slow-tape-thriller-bass-1000.mp3"></audio>
             </div>
             <div class="image-wrapper small-image">
-              <img src="https://images.unsplash.com/photo-1504700610630-ac6aba3536d3?q=80&w=1000&auto=format&fit=crop" alt="Track 3 visual" loading="lazy" />
+              <img src="https://images.unsplash.com/photo-1504700610630-ac6aba3536d3?q=80&w=1000&auto=format&fit=crop" alt="Track 3 visual" />
             </div>
           </div>
         </section>
 
         <section id="sec-04" class="gallery-item track-section inverted">
           <div class="image-wrapper tall-image">
-            <img src="https://images.unsplash.com/photo-1519904981063-b0cf448d479e?q=80&w=1000&auto=format&fit=crop" alt="Track 4 visual" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1519904981063-b0cf448d479e?q=80&w=1000&auto=format&fit=crop" alt="Track 4 visual" />
           </div>
           <div class="track-details">
             <span class="track-number">04</span>
             <h2 class="track-title">AURAL<br>SECTOR</h2>
-            <button class="play-track-btn" data-track="4" aria-label="Play track 4">▶ PREVIEW</button>
-            <audio id="track-4" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-driving-ambition-810.mp3" preload="metadata"></audio>
+            <button class="play-track-btn" data-track="4">▶ PREVIEW</button>
+            <audio id="track-4" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-driving-ambition-810.mp3"></audio>
           </div>
         </section>
 
@@ -165,24 +152,24 @@
           <div class="content-wrapper">
             <div class="title-group">
               <h2 class="track-title">ZERO<br>KELVIN</h2>
-              <button class="play-track-btn" data-track="5" aria-label="Play track 5">▶ PREVIEW</button>
-              <audio id="track-5" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-deep-urban-623.mp3" preload="metadata"></audio>
+              <button class="play-track-btn" data-track="5">▶ PREVIEW</button>
+              <audio id="track-5" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-deep-urban-623.mp3"></audio>
             </div>
             <div class="image-wrapper small-image">
-              <img src="https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=1000&auto=format&fit=crop" alt="Track 5 visual" loading="lazy" />
+              <img src="https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=1000&auto=format&fit=crop" alt="Track 5 visual" />
             </div>
           </div>
         </section>
 
         <section id="sec-06" class="gallery-item track-section inverted">
           <div class="image-wrapper tall-image">
-            <img src="https://images.unsplash.com/photo-1465056836041-7f43ac27dcb5?q=80&w=1000&auto=format&fit=crop" alt="Track 6 visual" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1465056836041-7f43ac27dcb5?q=80&w=1000&auto=format&fit=crop" alt="Track 6 visual" />
           </div>
           <div class="track-details">
             <span class="track-number">06</span>
             <h2 class="track-title">FINAL<br>ECHOES</h2>
-            <button class="play-track-btn" data-track="6" aria-label="Play track 6">▶ PREVIEW</button>
-            <audio id="track-6" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3" preload="metadata"></audio>
+            <button class="play-track-btn" data-track="6">▶ PREVIEW</button>
+            <audio id="track-6" class="track-audio" src="https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3"></audio>
           </div>
         </section>
 
@@ -191,7 +178,7 @@
             <h3>CREDITS</h3>
             <ul>
               <li>PRODUCED BY MILOS</li>
-              <li>MIXED BY MILOS</li>
+              <li>MIXED By MILOS</li>
               <li>ARTWORK BY MILOS</li>
             </ul>
             <a href="#" class="buy-btn">STREAM / BUY ALBUM</a>
@@ -201,7 +188,7 @@
       </div>
     </main>
 
-    <audio id="audio-player" loop preload="metadata">
+    <audio id="audio-player" loop>
         <source src="https://assets.mixkit.co/music/preview/mixkit-minimal-techno-vibe-music-999.mp3" type="audio/mp3">
     </audio>
     <script type="module" src="/main.js"></script>

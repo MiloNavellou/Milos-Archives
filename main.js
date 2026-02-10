@@ -1,10 +1,12 @@
 import './style.css'
 
-// Configuration
+// Configuration adaptative selon le device
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
 const CONFIG = {
-  sensitivity: 2, 
-  lerp: 0.05,     
-  skewSensitivity: 0.001 // Augmenté pour plus de dynamisme
+  sensitivity: isMobile ? 1.5 : 2, 
+  lerp: isMobile ? 0.08 : 0.05, // Plus rapide sur mobile
+  skewSensitivity: isMobile ? 0 : 0.005 // Désactivé sur mobile pour performances
 }
 
 // État
@@ -17,13 +19,13 @@ let state = {
 let isScrollActive = false;
 let touchStart = 0;
 let touchCurrent = 0;
+let lastTouchTime = 0;
 
-// GESTION DU HOVER SCALE
+// GESTION DU HOVER SCALE (désactivé sur mobile)
 let imageScales = new Map();
 
 // DOM Elements
 const container = document.querySelector('#scroll-container');
-// Sélectionner TOUTES les sections qui doivent s'animer
 const animatedSections = document.querySelectorAll('.gallery-item'); 
 const images = document.querySelectorAll('.image-wrapper img');
 const cursor = document.getElementById('cursor');
@@ -41,20 +43,22 @@ const menuOverlay = document.getElementById('menu-overlay');
 const closeMenuBtn = document.getElementById('close-menu');
 const menuLinks = document.querySelectorAll('.menu-link');
 
-// INITIALISATION HOVER LISTENERS
-images.forEach(img => {
-  imageScales.set(img, { current: 1, target: 1 });
-  
-  img.parentElement.addEventListener('mouseenter', () => {
-    let s = imageScales.get(img);
-    s.target = 1.1; // Zoom plus subtil car on a déjà l'anim d'entrée
+// INITIALISATION HOVER LISTENERS (desktop uniquement)
+if (!isMobile) {
+  images.forEach(img => {
+    imageScales.set(img, { current: 1, target: 1 });
+    
+    img.parentElement.addEventListener('mouseenter', () => {
+      let s = imageScales.get(img);
+      s.target = 1.1;
+    });
+    
+    img.parentElement.addEventListener('mouseleave', () => {
+      let s = imageScales.get(img);
+      s.target = 1.0;
+    });
   });
-  
-  img.parentElement.addEventListener('mouseleave', () => {
-    let s = imageScales.get(img);
-    s.target = 1.0;
-  });
-});
+}
 
 // --- 1. INTRODUCTION (Loader) ---
 
@@ -62,14 +66,14 @@ let loadProgress = 0;
 
 function simulateLoading() {
   const interval = setInterval(() => {
-    loadProgress += Math.floor(Math.random() * 5) + 2; // Plus rapide
+    loadProgress += Math.floor(Math.random() * 8) + 4; // Plus rapide
     if (loadProgress >= 100) {
       loadProgress = 100;
       clearInterval(interval);
       if(enterBtn) enterBtn.classList.add('visible');
     }
     if(loaderCount) loaderCount.textContent = loadProgress.toString().padStart(3, '0');
-  }, 50);
+  }, 40);
 }
 
 function enterSite() {
@@ -81,14 +85,13 @@ function enterSite() {
   
   document.body.classList.add('is-loaded');
   
-  // Animation d'entrée pour la Cover Section immédiatement
+  // Animation d'entrée pour la Cover Section
   const cover = document.querySelector('.cover-section');
   if(cover) cover.classList.add('is-in-view');
 
-  // Petit délai avant de donner la main au scroll
   setTimeout(() => {
     initScroll();
-  }, 1000);
+  }, isMobile ? 500 : 1000); // Plus rapide sur mobile
 }
 
 if(soundBtn && audio) {
@@ -107,34 +110,41 @@ if(enterBtn) enterBtn.addEventListener('click', enterSite);
 
 // --- 2. GESTION DU MENU ---
 
-menuTrigger.addEventListener('click', () => {
+menuTrigger.addEventListener('click', (e) => {
+  e.preventDefault();
   menuOverlay.classList.add('active');
-  isScrollActive = false; 
+  isScrollActive = false;
+  document.body.style.overflow = 'hidden';
 });
 
-closeMenuBtn.addEventListener('click', () => {
+closeMenuBtn.addEventListener('click', (e) => {
+  e.preventDefault();
   menuOverlay.classList.remove('active');
   isScrollActive = true;
+  document.body.style.overflow = '';
 });
 
 menuLinks.forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
     menuOverlay.classList.remove('active');
-    isScrollActive = true;
+    document.body.style.overflow = '';
     
     const targetId = link.getAttribute('data-target');
     const targetSection = document.getElementById(targetId);
     
     if (targetSection) {
-      // Calculer la position target en tenant compte du viewport
       const targetX = targetSection.offsetLeft;
-      state.target = Math.max(0, Math.min(targetX - (window.innerWidth * 0.1), state.limit)); // Centrer un peu
-      // Pas de saut direct, on laisse le lerp faire pour la fluidité
+      const offset = isMobile ? (window.innerWidth * 0.05) : (window.innerWidth * 0.1);
+      state.target = Math.max(0, Math.min(targetX - offset, state.limit));
     }
+    
+    // Réactiver le scroll après un court délai
+    setTimeout(() => {
+      isScrollActive = true;
+    }, 100);
   });
 });
-
 
 // --- 3. GESTION AUDIO PREVIEWS ---
 const trackButtons = document.querySelectorAll('.play-track-btn');
@@ -142,15 +152,18 @@ const allTrackAudios = document.querySelectorAll('.track-audio');
 
 trackButtons.forEach(btn => {
   btn.addEventListener('click', (e) => {
+    e.preventDefault();
     const trackId = btn.getAttribute('data-track');
     const targetAudio = document.getElementById(`track-${trackId}`);
     const isPlaying = !targetAudio.paused;
     
+    // Pause de l'audio principal
     if(audio && !audio.paused) {
-        audio.pause();
-        if(soundState) soundState.textContent = "PAUSED";
+      audio.pause();
+      if(soundState) soundState.textContent = "PAUSED";
     }
     
+    // Stop tous les autres tracks
     allTrackAudios.forEach(trackAudio => {
       trackAudio.pause();
       trackAudio.currentTime = 0;
@@ -160,33 +173,43 @@ trackButtons.forEach(btn => {
       b.classList.remove('playing');
     });
     
+    // Toggle lecture
     if (!isPlaying) {
       targetAudio.volume = 0.7;
-      targetAudio.play();
+      targetAudio.play().catch(err => console.log("Playback prevented:", err));
       btn.textContent = "■ STOP";
       btn.classList.add('playing');
     }
   });
 });
 
+// Reset des boutons quand un track se termine
 allTrackAudios.forEach(trackAudio => {
   trackAudio.addEventListener('ended', () => {
-     trackButtons.forEach(b => {
+    trackButtons.forEach(b => {
       b.textContent = "▶ PREVIEW";
       b.classList.remove('playing');
     });
   });
 });
 
-
 // --- 4. MOTEUR DE SCROLL ---
 
 function initScroll() {
   calculateLimit();
-  window.addEventListener('resize', calculateLimit);
-  window.addEventListener('wheel', handleScroll, { passive: false });
+  
+  // Event listeners avec options optimisées
+  window.addEventListener('resize', debounce(calculateLimit, 250));
+  
+  if (!isMobile) {
+    window.addEventListener('wheel', handleScroll, { passive: false });
+  }
+  
+  // Touch events pour mobile
   window.addEventListener('touchstart', handleTouchStart, { passive: true });
   window.addEventListener('touchmove', handleTouchMove, { passive: false });
+  window.addEventListener('touchend', handleTouchEnd, { passive: true });
+  
   isScrollActive = true;
   requestAnimationFrame(raf);
 }
@@ -204,19 +227,46 @@ function handleScroll(e) {
   state.target = Math.max(0, Math.min(state.target, state.limit));
 }
 
+let touchStartX = 0;
+let touchMoveX = 0;
+
 function handleTouchStart(e) {
   if(!isScrollActive) return;
-  touchStart = e.touches[0].clientX;
+  touchStartX = e.touches[0].clientX;
+  touchMoveX = touchStartX;
+  lastTouchTime = Date.now();
 }
 
 function handleTouchMove(e) {
   if(!isScrollActive) return;
-  e.preventDefault();
-  touchCurrent = e.touches[0].clientX;
-  const delta = (touchStart - touchCurrent) * 3; 
+  
+  // Prévenir le scroll natif
+  if (Math.abs(e.touches[0].clientX - touchStartX) > 10) {
+    e.preventDefault();
+  }
+  
+  touchMoveX = e.touches[0].clientX;
+  const delta = (touchStartX - touchMoveX) * (isMobile ? 2 : 3);
   state.target += delta;
   state.target = Math.max(0, Math.min(state.target, state.limit));
-  touchStart = touchCurrent;
+  touchStartX = touchMoveX;
+}
+
+function handleTouchEnd(e) {
+  if(!isScrollActive) return;
+  
+  // Ajouter de l'inertie au swipe sur mobile
+  if (isMobile) {
+    const touchDuration = Date.now() - lastTouchTime;
+    const touchDistance = touchMoveX - touchStartX;
+    
+    if (touchDuration < 200 && Math.abs(touchDistance) > 50) {
+      // Swipe rapide détecté
+      const velocity = touchDistance / touchDuration;
+      state.target -= velocity * 200; // Ajouter momentum
+      state.target = Math.max(0, Math.min(state.target, state.limit));
+    }
+  }
 }
 
 // --- 5. BOUCLE D'ANIMATION (RAF) ---
@@ -225,10 +275,10 @@ function raf() {
   // LERP SCROLL
   state.current = lerp(state.current, state.target, CONFIG.lerp);
   
-  // SKEW EFFECT (Vitesse du scroll déforme le container)
+  // SKEW EFFECT (desktop uniquement)
   const velocity = state.target - state.current;
-  const skew = velocity * CONFIG.skewSensitivity;
-
+  const skew = CONFIG.skewSensitivity * velocity;
+  
   // Arrondi pour performance
   const currentScroll = Math.round(state.current * 100) / 100;
   
@@ -236,46 +286,34 @@ function raf() {
     container.style.transform = `translate3d(${-currentScroll}px, 0, 0) skewX(${skew}deg)`;
   }
 
-  // DETECTION DE VISIBILITÉ (SCROLL TRIGGER) & PARALLAXE
+  // DETECTION DE VISIBILITÉ & PARALLAXE
   const viewportWidth = window.innerWidth;
 
   animatedSections.forEach(section => {
-    // Calcul de la position de la section par rapport à l'écran
-    // Position réelle = OffsetLeft - ScrollActuel
     const sectionLeft = section.offsetLeft - currentScroll;
     const sectionRight = sectionLeft + section.offsetWidth;
-
-    // Seuil de déclenchement (la section s'anime quand elle entre de 10% dans l'écran)
-    const triggerPoint = viewportWidth * 0.85; 
+    const triggerPoint = viewportWidth * 0.85;
 
     if (sectionLeft < triggerPoint && sectionRight > 0) {
       if (!section.classList.contains('is-in-view')) {
         section.classList.add('is-in-view');
       }
-    } 
-    // Optionnel: retirer la classe si on veut rejouer l'anim au retour (souvent mieux sans pour UX)
-    // else { section.classList.remove('is-in-view'); }
+    }
 
-    // PARALLAXE IMAGES (Seulement si visible pour perf)
-    if (sectionLeft < viewportWidth && sectionRight > 0) {
-        const img = section.querySelector('img');
-        if(img) {
-            // Calculer la progression de la section dans l'écran (-1 à 1)
-            const progress = (sectionLeft + section.offsetWidth / 2 - viewportWidth / 2) / (viewportWidth / 2);
-            
-            // Intensité parallaxe
-            const moveX = progress * 80; // Bouge de 80px
-            
-            // On combine avec le scale du hover
-            let s = imageScales.get(img) || { current: 1 };
-            // On lerp le scale ici aussi pour être sûr
-            if(imageScales.has(img)) {
-               s.current = lerp(s.current, s.target, 0.1);
-            }
-            
-            // Application transform
-            img.style.transform = `translateX(${moveX}px) scale(${s.current})`;
+    // PARALLAXE IMAGES (desktop uniquement)
+    if (!isMobile && sectionLeft < viewportWidth && sectionRight > 0) {
+      const img = section.querySelector('img');
+      if(img) {
+        const progress = (sectionLeft + section.offsetWidth / 2 - viewportWidth / 2) / (viewportWidth / 2);
+        const moveX = progress * 80;
+        
+        let s = imageScales.get(img) || { current: 1 };
+        if(imageScales.has(img)) {
+          s.current = lerp(s.current, s.target, 0.1);
         }
+        
+        img.style.transform = `translateX(${moveX}px) scale(${s.current})`;
+      }
     }
   });
 
@@ -287,13 +325,20 @@ function raf() {
 let mouse = { x: 0, y: 0 };
 let cursorPos = { x: 0, y: 0 };
 
-document.addEventListener('mousemove', (e) => {
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
-});
+if (!isMobile) {
+  document.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+  
+  document.querySelectorAll('.gallery-item, .menu-link').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovered'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovered'));
+  });
+}
 
 function animateCursor() {
-  if(!cursor) return;
+  if(!cursor || isMobile) return;
   cursorPos.x = lerp(cursorPos.x, mouse.x, 0.1);
   cursorPos.y = lerp(cursorPos.y, mouse.y, 0.1);
   cursor.style.transform = `translate(${cursorPos.x}px, ${cursorPos.y}px) translate(-50%, -50%)`;
@@ -304,12 +349,20 @@ function lerp(start, end, factor) {
   return start + (end - start) * factor;
 }
 
-document.querySelectorAll('.gallery-item, .menu-link').forEach(el => {
-  el.addEventListener('mouseenter', () => document.body.classList.add('hovered'));
-  el.addEventListener('mouseleave', () => document.body.classList.remove('hovered'));
-});
+// Fonction debounce pour optimiser les resize events
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
-// --- 7. EFFET ROLLING TEXT (MODIFIÉ POUR ANIMATION D'ENTRÉE) ---
+// --- 7. EFFET ROLLING TEXT ---
 
 function initRollingText() {
   const titles = document.querySelectorAll('.track-title'); 
@@ -320,33 +373,36 @@ function initRollingText() {
     title.innerHTML = '';
 
     lines.forEach((line, lineIndex) => {
-      // 1. WRAPPER EXTERNE (Masque pour l'apparition ligne par ligne)
       const lineContainer = document.createElement('div');
       lineContainer.className = 'anim-text-line';
       
-      // 2. WRAPPER INTERNE (Celui qui bouge de bas en haut à l'apparition)
       const lineInner = document.createElement('span');
       lineInner.className = 'anim-text-line-inner';
 
-      // 3. LOGIQUE ROLLING (Lettre par lettre)
-      line.trim().split('').forEach((char, charIndex) => {
-        if (char === ' ') {
-          const space = document.createElement('span');
-          space.className = 'char-space';
-          space.innerHTML = '&nbsp;';
-          lineInner.appendChild(space);
-        } else {
-          const wrapper = document.createElement('span');
-          wrapper.className = 'char-wrap';
-          const delay = (charIndex * 0.02) + 's'; // Délai rapide pour le roll
-          
-          wrapper.innerHTML = `
-            <span class="char-orig" style="transition-delay: ${delay}">${char}</span>
-            <span class="char-clone" style="transition-delay: ${delay}">${char}</span>
-          `;
-          lineInner.appendChild(wrapper);
-        }
-      });
+      // Sur mobile, on simplifie (pas de rolling par lettre)
+      if (isMobile) {
+        lineInner.textContent = line.trim();
+      } else {
+        // Desktop: effet rolling complet
+        line.trim().split('').forEach((char, charIndex) => {
+          if (char === ' ') {
+            const space = document.createElement('span');
+            space.className = 'char-space';
+            space.innerHTML = '&nbsp;';
+            lineInner.appendChild(space);
+          } else {
+            const wrapper = document.createElement('span');
+            wrapper.className = 'char-wrap';
+            const delay = (charIndex * 0.02) + 's';
+            
+            wrapper.innerHTML = `
+              <span class="char-orig" style="transition-delay: ${delay}">${char}</span>
+              <span class="char-clone" style="transition-delay: ${delay}">${char}</span>
+            `;
+            lineInner.appendChild(wrapper);
+          }
+        });
+      }
 
       lineContainer.appendChild(lineInner);
       title.appendChild(lineContainer);
@@ -354,7 +410,71 @@ function initRollingText() {
   });
 }
 
-// LANCEMENT
+// --- 8. PRÉVENTION DU PULL-TO-REFRESH SUR MOBILE ---
+
+if (isMobile) {
+  let lastY = 0;
+  
+  document.body.addEventListener('touchstart', (e) => {
+    lastY = e.touches[0].clientY;
+  }, { passive: true });
+  
+  document.body.addEventListener('touchmove', (e) => {
+    const currentY = e.touches[0].clientY;
+    const isScrollingVertically = Math.abs(currentY - lastY) > Math.abs(e.touches[0].clientX - touchStartX);
+    
+    // Empêcher le pull-to-refresh si on scroll horizontalement
+    if (!isScrollingVertically && window.scrollY === 0) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+}
+
+// --- 9. GESTION DES ERREURS AUDIO ---
+
+// Gestion des erreurs de lecture audio
+allTrackAudios.forEach(trackAudio => {
+  trackAudio.addEventListener('error', (e) => {
+    console.warn('Audio loading error:', e);
+  });
+});
+
+if (audio) {
+  audio.addEventListener('error', (e) => {
+    console.warn('Background audio error:', e);
+  });
+}
+
+// --- 10. OPTIMISATION PERFORMANCES ---
+
+// Réduire la fréquence du RAF sur mobile si batterie faible
+let rafThrottle = 1;
+if (isMobile && 'getBattery' in navigator) {
+  navigator.getBattery().then(battery => {
+    if (battery.level < 0.2) {
+      rafThrottle = 2; // Skip every other frame
+    }
+  });
+}
+
+let rafCounter = 0;
+const originalRaf = raf;
+raf = function() {
+  rafCounter++;
+  if (rafCounter % rafThrottle === 0) {
+    originalRaf();
+  } else {
+    requestAnimationFrame(raf);
+  }
+}
+
+// --- LANCEMENT ---
 initRollingText();
-animateCursor();
+if (!isMobile) {
+  animateCursor();
+}
 simulateLoading();
+
+// Log pour debug
+console.log('Mobile detected:', isMobile);
+console.log('Config:', CONFIG);
