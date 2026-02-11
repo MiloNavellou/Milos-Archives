@@ -2,6 +2,7 @@ import './style.css'
 
 // Configuration adaptative selon le device
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+console.log('Device détecté:', isMobile ? 'Mobile' : 'Desktop');
 
 const CONFIG = {
   sensitivity: 2, 
@@ -132,10 +133,12 @@ menuLinks.forEach(link => {
     
     if (targetSection) {
       if (isMobile) {
+        console.log('Scroll Mobile');
         // SCROLL NATIF POUR MOBILE (Direct & Smooth)
         targetSection.scrollIntoView({ behavior: 'smooth', inline: 'start' });
       } else {
         // SCROLL JS POUR DESKTOP
+        console.log('Scroll Desktop');
         const targetX = targetSection.offsetLeft;
         const offset = window.innerWidth * 0.1;
         state.target = Math.max(0, Math.min(targetX - offset, state.limit));
@@ -232,7 +235,6 @@ function raf() {
   
   // --- A. MOBILE : NATIVE SCROLL ---
   if (isMobile) {
-    // On ne transforme PAS le container. On laisse le navigateur faire.
     // On lit juste la position pour déclencher les animations "In View"
     if(container) {
       const currentScroll = container.scrollLeft;
@@ -392,7 +394,6 @@ function initRollingText() {
 }
 
 // --- 8. PREVENT PULL-TO-REFRESH (Mobile Only) ---
-// Utile pour éviter le reload quand on swipe fort sur les bords
 
 if (isMobile) {
   document.body.style.overscrollBehaviorY = 'none';
