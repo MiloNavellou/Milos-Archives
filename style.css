@@ -502,7 +502,8 @@ body.is-loaded .cover-section .meta-data {
 /* OPTIMISATIONS POUR TRÈS PETITS ÉCRANS */
 @media (max-width: 480px) {
   .menu-link {
-    font-size: 14vw;
+    font-size: 10vw;
+    margin-left: -3vh;
   }
   
   .track-title {
